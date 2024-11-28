@@ -1,0 +1,65 @@
+---
+title: "Build summary locally"
+date: last-modified
+date-format: iso
+published-title: "Last updated"
+author: 
+  - Pacific Islands Fisheries Science Center
+engine: knitr
+execute:
+    eval: false
+    echo: false
+    output: false
+title-block-banner: "#C6E6F0"
+title-block-banner-color: "#001743"
+html:
+    embed-resources: true
+    toc: true
+    toc-location: right
+    number-sections: true
+    code-overflow: wrap
+    theme: [default, customizations/custom.scss]
+css: customizations/styles-home.css  
+---
+
+Instructions for building the summary files locally can be found below. Note that only the `wcpfc-ca-spa-catch-summary.qmd` file needs to be edited in order to make changes to the summary documents.
+
+# Set-up R environment
+
+Users should [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository on their local machine.
+
+## Using base R
+
+Users should open up an R terminal ([version 4.4.0](https://cloud.r-project.org/)) and change the working directory to the directory that they cloned the repository into:
+```
+setwd("path/to/2024-spa-summary/")
+```
+Next they should source the [`.Rprofile`](https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/blob/main/.Rprofile):
+```
+source(".Rprofile")
+```
+This should prompt the `renv` package to bootstrap itself. [`renv`](https://rstudio.github.io/renv/index.html) is used for R package management to ensure a consistent work environment is set-up by recording package version information in a lock-file, [`renv.lock`](https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/blob/main/renv.lock). Follow the in terminal prompts to install all packages. This should take a few minutes as there are a number of packages to load. If `renv` does not bootstrap automatically then run:
+```
+renv::restore()
+```
+
+## Using an integrated development environment (IDE)
+
+Users using an integrated development environment (IDE) such as [Visual Studio Code](https://code.visualstudio.com/download) can configure set-up with R version 4.4.0 (set-up instructions [here](https://github.com/REditorSupport/vscode-R)). In order to configure Visual Studio Code to work with `renv` the user should follow the configuration steps located [here](https://github.com/REditorSupport/vscode-R/wiki/Working-with-renv-enabled-projects). Once Visual Studio Code has been configured properly, open the `2024-WCPFC21-analysis` folder using Visual Studio Code. [Opening an R terminal](https://code.visualstudio.com/docs/languages/r#_running-r-code) should prompt the `renv` package to bootstrap itself as described above. If `renv` does not bootstrap automatically then run:
+
+```
+renv::restore()
+```
+If using an alternative IDE such as [Rstudio](https://posit.co/download/rstudio-desktop/) the R environment set-up will be very similar to the process described for Visual Studio Code.
+
+# Rendering
+
+The `wcpfc-ca-spa-catch-summaries.html` and `wcpfc-ca-spa-catch-summaries.pdf` summary files are produced by rendering the `wcpfc-ca-spa-catch-summaries.qmd` file using [Quarto](https://quarto.org/docs/get-started/). In this case, [Quarto version 1.6.37](https://quarto.org/docs/download/) was used.
+
+Open a terminal window in the project directory to render the Quarto document (`.qmd` file), from the command line using:
+
+```
+quarto render wcpfc-ca-spa-catch-summaries.qmd
+```
+
+This *should* work without error. If not, it is possible that a [TinyTeX](https://yihui.org/tinytex/) distribution may need to be installed and this can be done using [R](https://yihui.org/tinytex/#for-r-users) via the [tinytex](https://yihui.org/tinytex/r/) package. 

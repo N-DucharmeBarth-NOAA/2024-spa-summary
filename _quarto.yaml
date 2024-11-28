@@ -27,6 +27,8 @@ website:
         file: index.qmd
       - text: "SPA catch summary"
         file: wcpfc-ca-spa-catch-summary.qmd
+      - text: "Build instructions"
+        file: build-instructions.qmd
       - section: "Support"
         contents:
         - text: "Submit an issue"

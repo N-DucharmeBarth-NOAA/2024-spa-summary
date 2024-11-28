@@ -172,6 +172,12 @@ background: #C6E6F0;
  <span class="menu-text">SPA catch summary</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./build-instructions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Build instructions</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -205,13 +211,7 @@ background: #C6E6F0;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#set-up-r-environment" id="toc-set-up-r-environment" class="nav-link active" data-scroll-target="#set-up-r-environment">Set-up R environment</a>
-  <ul class="collapse">
-  <li><a href="#using-base-r" id="toc-using-base-r" class="nav-link" data-scroll-target="#using-base-r">Using base R</a></li>
-  <li><a href="#using-an-integrated-development-environment-ide" id="toc-using-an-integrated-development-environment-ide" class="nav-link" data-scroll-target="#using-an-integrated-development-environment-ide">Using an integrated development environment (IDE)</a></li>
-  </ul></li>
-  <li><a href="#rendering" id="toc-rendering" class="nav-link" data-scroll-target="#rendering">Rendering</a></li>
-  <li><a href="#github-disclaimer" id="toc-github-disclaimer" class="nav-link" data-scroll-target="#github-disclaimer">Github Disclaimer</a></li>
+  <li><a href="#github-disclaimer" id="toc-github-disclaimer" class="nav-link active" data-scroll-target="#github-disclaimer">Github Disclaimer</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/blob/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -224,33 +224,7 @@ background: #C6E6F0;
 
 <p>This repository contains code and data required to render summary documents (in both <code>.html</code> and <code>.pdf</code> formats) of South Pacific albacore (SPA) catch within the Western and Central Pacific Fisheries Commission (<a href="https://www.wcpfc.int/">WCPFC</a>) convention area. Catch summaries are provided for all participating Members, Participating Territories and Cooperating Non-Members (CCMs) with longline and troll catch of SPA per the most recent <a href="https://www.wcpfc.int/statistical-bulletins">WCPFC Yearbook data</a>. Catch summaries are placed in the context of a proposed Conservation and Management Measure (CMM) on a management procedure (MP) for SPA (<a href="https://meetings.wcpfc.int/node/24363">public proposal</a>).</p>
 <p>Note that the data set used, <a href="https://www.wcpfc.int/doc/annual-catch-estimates-2022-data-files"><code>YB_data_2023/XLS_SouthWCPFC.csv</code></a>, is the 2023 version of the <a href="https://www.wcpfc.int/statistical-bulletins">WCPFC Tuna Fishery Yearbook - Annual Catch Estimates</a>. The file <code>YB_data_2023/spa-ll-eez.csv</code> contains data transcribed from <a href="https://meetings.wcpfc.int/node/23046">SC20-SA-IP-07</a> Table 6, and the file <code>YB_data_2023/ccm-dat.csv</code> containing CCM abbreviations was created for this repository.</p>
-<p>Only the <code>.qmd</code> file needs to be edited in order to make changes to the summary documents.</p>
-<section id="set-up-r-environment" class="level2">
-<h2 class="anchored" data-anchor-id="set-up-r-environment">Set-up R environment</h2>
-<p>Users should <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository">clone</a> this repository on their local machine.</p>
-<section id="using-base-r" class="level3">
-<h3 class="anchored" data-anchor-id="using-base-r">Using base R</h3>
-<p>Users should open up an R terminal (<a href="https://cloud.r-project.org/">version 4.4.0</a>) and change the working directory to the directory that they cloned the repository into:</p>
-<pre><code>setwd("path/to/2024-spa-summary/")</code></pre>
-<p>Next they should source the <a href="https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/blob/main/.Rprofile"><code>.Rprofile</code></a>:</p>
-<pre><code>source(".Rprofile")</code></pre>
-<p>This should prompt the <code>renv</code> package to bootstrap itself. <a href="https://rstudio.github.io/renv/index.html"><code>renv</code></a> is used for R package management to ensure a consistent work environment is set-up by recording package version information in a lock-file, <a href="https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/blob/main/renv.lock"><code>renv.lock</code></a>. Follow the in terminal prompts to install all packages. This should take a few minutes as there are a number of packages to load. If <code>renv</code> does not bootstrap automatically then run:</p>
-<pre><code>renv::restore()</code></pre>
-</section>
-<section id="using-an-integrated-development-environment-ide" class="level3">
-<h3 class="anchored" data-anchor-id="using-an-integrated-development-environment-ide">Using an integrated development environment (IDE)</h3>
-<p>Users using an integrated development environment (IDE) such as <a href="https://code.visualstudio.com/download">Visual Studio Code</a> can configure set-up with R version 4.4.0 (set-up instructions <a href="https://github.com/REditorSupport/vscode-R">here</a>). In order to configure Visual Studio Code to work with <code>renv</code> the user should follow the configuration steps located <a href="https://github.com/REditorSupport/vscode-R/wiki/Working-with-renv-enabled-projects">here</a>. Once Visual Studio Code has been configured properly, open the <code>2024-WCPFC21-analysis</code> folder using Visual Studio Code. <a href="https://code.visualstudio.com/docs/languages/r#_running-r-code">Opening an R terminal</a> should prompt the <code>renv</code> package to bootstrap itself as described above. If <code>renv</code> does not bootstrap automatically then run:</p>
-<pre><code>renv::restore()</code></pre>
-<p>If using an alternative IDE such as <a href="https://posit.co/download/rstudio-desktop/">Rstudio</a> the R environment set-up will be very similar to the process described for Visual Studio Code.</p>
-</section>
-</section>
-<section id="rendering" class="level2">
-<h2 class="anchored" data-anchor-id="rendering">Rendering</h2>
-<p>The <code>wcpfc-ca-spa-catch-summaries.html</code> and <code>wcpfc-ca-spa-catch-summaries.pdf</code> summary files are produced by rendering the <code>wcpfc-ca-spa-catch-summaries.qmd</code> file using <a href="https://quarto.org/docs/get-started/">Quarto</a>. In this case, <a href="https://quarto.org/docs/download/">Quarto version 1.6.37</a> was used.</p>
-<p>Open a terminal window in the project directory to render the Quarto document (<code>.qmd</code> file), from the command line using:</p>
-<pre><code>quarto render wcpfc-ca-spa-catch-summaries.qmd</code></pre>
-<p>This <em>should</em> work without error. If not, it is possible that a <a href="https://yihui.org/tinytex/">TinyTeX</a> distribution may need to be installed and this can be done using <a href="https://yihui.org/tinytex/#for-r-users">R</a> via the <a href="https://yihui.org/tinytex/r/">tinytex</a> package.</p>
-</section>
+<p>The SPA data summary can be found <a href="https://n-ducharmebarth-noaa.github.io/2024-spa-summary/wcpfc-ca-spa-catch-summary.html">here</a>.</p>
 <section id="github-disclaimer" class="level2">
 <h2 class="anchored" data-anchor-id="github-disclaimer">Github Disclaimer</h2>
 <p>This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.</p>

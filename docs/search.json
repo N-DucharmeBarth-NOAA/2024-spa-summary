@@ -20,31 +20,41 @@
     ]
   },
   {
+    "objectID": "build-instructions.html",
+    "href": "build-instructions.html",
+    "title": "Build summary locally",
+    "section": "",
+    "text": "Instructions for building the summary files locally can be found below. Note that only the wcpfc-ca-spa-catch-summary.qmd file needs to be edited in order to make changes to the summary documents.",
+    "crumbs": [
+      "Build instructions"
+    ]
+  },
+  {
+    "objectID": "build-instructions.html#using-base-r",
+    "href": "build-instructions.html#using-base-r",
+    "title": "Build summary locally",
+    "section": "Using base R",
+    "text": "Using base R\nUsers should open up an R terminal (version 4.4.0) and change the working directory to the directory that they cloned the repository into:\nsetwd(\"path/to/2024-spa-summary/\")\nNext they should source the .Rprofile:\nsource(\".Rprofile\")\nThis should prompt the renv package to bootstrap itself. renv is used for R package management to ensure a consistent work environment is set-up by recording package version information in a lock-file, renv.lock. Follow the in terminal prompts to install all packages. This should take a few minutes as there are a number of packages to load. If renv does not bootstrap automatically then run:\nrenv::restore()",
+    "crumbs": [
+      "Build instructions"
+    ]
+  },
+  {
+    "objectID": "build-instructions.html#using-an-integrated-development-environment-ide",
+    "href": "build-instructions.html#using-an-integrated-development-environment-ide",
+    "title": "Build summary locally",
+    "section": "Using an integrated development environment (IDE)",
+    "text": "Using an integrated development environment (IDE)\nUsers using an integrated development environment (IDE) such as Visual Studio Code can configure set-up with R version 4.4.0 (set-up instructions here). In order to configure Visual Studio Code to work with renv the user should follow the configuration steps located here. Once Visual Studio Code has been configured properly, open the 2024-WCPFC21-analysis folder using Visual Studio Code. Opening an R terminal should prompt the renv package to bootstrap itself as described above. If renv does not bootstrap automatically then run:\nrenv::restore()\nIf using an alternative IDE such as Rstudio the R environment set-up will be very similar to the process described for Visual Studio Code.",
+    "crumbs": [
+      "Build instructions"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Home",
     "section": "",
-    "text": "This repository contains code and data required to render summary documents (in both .html and .pdf formats) of South Pacific albacore (SPA) catch within the Western and Central Pacific Fisheries Commission (WCPFC) convention area. Catch summaries are provided for all participating Members, Participating Territories and Cooperating Non-Members (CCMs) with longline and troll catch of SPA per the most recent WCPFC Yearbook data. Catch summaries are placed in the context of a proposed Conservation and Management Measure (CMM) on a management procedure (MP) for SPA (public proposal).\nNote that the data set used, YB_data_2023/XLS_SouthWCPFC.csv, is the 2023 version of the WCPFC Tuna Fishery Yearbook - Annual Catch Estimates. The file YB_data_2023/spa-ll-eez.csv contains data transcribed from SC20-SA-IP-07 Table 6, and the file YB_data_2023/ccm-dat.csv containing CCM abbreviations was created for this repository.\nOnly the .qmd file needs to be edited in order to make changes to the summary documents.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#set-up-r-environment",
-    "href": "index.html#set-up-r-environment",
-    "title": "Home",
-    "section": "Set-up R environment",
-    "text": "Set-up R environment\nUsers should clone this repository on their local machine.\n\nUsing base R\nUsers should open up an R terminal (version 4.4.0) and change the working directory to the directory that they cloned the repository into:\nsetwd(\"path/to/2024-spa-summary/\")\nNext they should source the .Rprofile:\nsource(\".Rprofile\")\nThis should prompt the renv package to bootstrap itself. renv is used for R package management to ensure a consistent work environment is set-up by recording package version information in a lock-file, renv.lock. Follow the in terminal prompts to install all packages. This should take a few minutes as there are a number of packages to load. If renv does not bootstrap automatically then run:\nrenv::restore()\n\n\nUsing an integrated development environment (IDE)\nUsers using an integrated development environment (IDE) such as Visual Studio Code can configure set-up with R version 4.4.0 (set-up instructions here). In order to configure Visual Studio Code to work with renv the user should follow the configuration steps located here. Once Visual Studio Code has been configured properly, open the 2024-WCPFC21-analysis folder using Visual Studio Code. Opening an R terminal should prompt the renv package to bootstrap itself as described above. If renv does not bootstrap automatically then run:\nrenv::restore()\nIf using an alternative IDE such as Rstudio the R environment set-up will be very similar to the process described for Visual Studio Code.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#rendering",
-    "href": "index.html#rendering",
-    "title": "Home",
-    "section": "Rendering",
-    "text": "Rendering\nThe wcpfc-ca-spa-catch-summaries.html and wcpfc-ca-spa-catch-summaries.pdf summary files are produced by rendering the wcpfc-ca-spa-catch-summaries.qmd file using Quarto. In this case, Quarto version 1.6.37 was used.\nOpen a terminal window in the project directory to render the Quarto document (.qmd file), from the command line using:\nquarto render wcpfc-ca-spa-catch-summaries.qmd\nThis should work without error. If not, it is possible that a TinyTeX distribution may need to be installed and this can be done using R via the tinytex package.",
+    "text": "This repository contains code and data required to render summary documents (in both .html and .pdf formats) of South Pacific albacore (SPA) catch within the Western and Central Pacific Fisheries Commission (WCPFC) convention area. Catch summaries are provided for all participating Members, Participating Territories and Cooperating Non-Members (CCMs) with longline and troll catch of SPA per the most recent WCPFC Yearbook data. Catch summaries are placed in the context of a proposed Conservation and Management Measure (CMM) on a management procedure (MP) for SPA (public proposal).\nNote that the data set used, YB_data_2023/XLS_SouthWCPFC.csv, is the 2023 version of the WCPFC Tuna Fishery Yearbook - Annual Catch Estimates. The file YB_data_2023/spa-ll-eez.csv contains data transcribed from SC20-SA-IP-07 Table 6, and the file YB_data_2023/ccm-dat.csv containing CCM abbreviations was created for this repository.\nThe SPA data summary can be found here.",
     "crumbs": [
       "Home"
     ]
