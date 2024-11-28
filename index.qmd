@@ -19,7 +19,7 @@ html:
     number-sections: true
     code-overflow: wrap
     theme: [default, customizations/custom.scss]
-css: customizations/styles.css  
+css: customizations/styles-home.css  
 ---
 
 This repository contains code and data required to render summary documents (in both `.html` and `.pdf` formats) of South Pacific albacore (SPA) catch within the Western and Central Pacific Fisheries Commission ([WCPFC](https://www.wcpfc.int/)) convention area. Catch summaries are provided for all participating Members, Participating Territories and Cooperating Non-Members (CCMs) with longline and troll catch of SPA per the most recent [WCPFC Yearbook data](https://www.wcpfc.int/statistical-bulletins). Catch summaries are placed in the context of a proposed Conservation and Management Measure (CMM) on a management procedure (MP) for SPA ([public proposal](https://meetings.wcpfc.int/node/24363)).
