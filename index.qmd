@@ -26,7 +26,7 @@ This repository contains code and data required to render summary documents (in 
 
 Note that the data set used, [`YB_data_2023/XLS_SouthWCPFC.csv`](https://www.wcpfc.int/doc/annual-catch-estimates-2022-data-files), is the 2023 version of the [WCPFC Tuna Fishery Yearbook - Annual Catch Estimates](https://www.wcpfc.int/statistical-bulletins). The file `YB_data_2023/spa-ll-eez.csv` contains data transcribed from [SC20-SA-IP-07](https://meetings.wcpfc.int/node/23046) Table 6, and the file `YB_data_2023/ccm-dat.csv` containing CCM abbreviations was created for this repository.
 
-The SPA data summary can be found [here](https://n-ducharmebarth-noaa.github.io/2024-spa-summary/wcpfc-ca-spa-catch-summary.html).
+[The SPA data summary can be found [here](https://n-ducharmebarth-noaa.github.io/2024-spa-summary/wcpfc-ca-spa-catch-summary.html).]{.blue}
 
 ## Github Disclaimer
 
