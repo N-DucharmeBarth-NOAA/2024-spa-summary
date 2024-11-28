@@ -1,0 +1,488 @@
+---
+title: "WCPFC-CA South Pacific albacore catch summaries"
+date: last-modified
+date-format: iso
+published-title: "Last updated"
+author: 
+  - Pacific Islands Fisheries Science Center
+engine: knitr
+execute:
+    eval: false
+    echo: false
+    output: false
+title-block-banner: "#C6E6F0"
+title-block-banner-color: "#001743" 
+format:
+  pdf:
+    output-file: "wcpfc-ca-spa-catch-summary"
+    output-ext:  "pdf"
+    number-sections: true
+    code-overflow: wrap
+    colorlinks: true
+    header-includes:
+        - \usepackage{titling}
+        - \pretitle{\begin{center}
+          \includegraphics[width=2in]{customizations/noaa-fisheries-logo.png}\LARGE\\}
+        - \posttitle{\end{center}}
+  html:
+    embed-resources: true
+    toc: true
+    toc-location: right
+    number-sections: true
+    code-overflow: wrap
+    theme: [default, customizations/custom.scss]
+css: customizations/styles.css 
+---
+
+
+This document provides a summary of South Pacific albacore (SPA) catch within the Western and Central Pacific Fisheries Commission ([WCPFC](https://www.wcpfc.int/)) convention area. Catch summaries are provided for all participating Members, Participating Territories and Cooperating Non-Members (CCMs) with longline and troll catch of SPA per the most recent [WCPFC Yearbook data](https://www.wcpfc.int/statistical-bulletins). Catch summaries are placed in the context of a proposed Conservation and Management Measure (CMM) on a management procedure (MP) for SPA ([public proposal](https://meetings.wcpfc.int/node/24363)). 
+
+# CCM specific catch summaries {#sec-ccm-catch}
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+
+# set options
+options(scipen=999)
+
+# load libraries
+    library(data.table)
+    library(magrittr)
+    library(ggplot2)
+
+# set relative path
+    proj_dir = this.path::this.proj()
+
+# load data
+    spa_dat = fread(file=paste0(proj_dir,"/YB_data_2023/XLS_SouthWCPFC.csv"))
+
+# process data    
+    spa_proc = copy(spa_dat) %>%
+                .[SP_CODE=="ALB"&GEAR_CODE%in%c("L","T")] %>%
+                .[FLEET_CODE=="AS",FLAG_CODE:="AS"] %>%
+                .[,.(YY,GEAR_CODE,FLAG_CODE,SP_MT)] %>%
+                .[,id:=paste0(FLAG_CODE," - ",GEAR_CODE)] %>%
+                .[,GEAR_CODE:=factor(GEAR_CODE,levels=c("L","T"),labels=c("Longline (L)", "Troll (T)"))] %>%
+                .[YY %in% 2020:2022,.(SP_MT=mean(SP_MT,na.rm=TRUE)),by=.(id,FLAG_CODE,GEAR_CODE)] %>%
+                .[,prop:=SP_MT/sum(SP_MT)*100] %>%
+                .[order(prop)] 
+
+# threshold analysis
+    threshold_vec = seq(from=0,to=0.5,by=0.001)
+    totprop_vec = rep(0,length(threshold_vec))
+
+    for(i in seq_along(threshold_vec)){
+        totprop_vec[i] = sum(spa_proc[prop<threshold_vec[i]*100]$SP_MT)/sum(spa_proc$SP_MT)
+    }
+
+    thresh_dt = data.table(threshold=threshold_vec*100,totprop=totprop_vec*100)
+
+```
+
+The proposed CMM for an MP for SPA would apply to all troll and longline fisheries operating south of the equator. Each run of the MP would set total catch values for fisheries under MP control relative to average recent catch values. [Recent catch is defined as the period 2020-2022]{.blue}.
+
+Average total catch of SPA over the recent period is `r formatC(round(mean(spa_dat[SP_CODE=="ALB"&YY%in%2020:2022,.(SP_MT=sum(SP_MT)),by=YY]$SP_MT)),big.mark=",",format="f",digits=0)` metric tons (mt), of which `r formatC(round(mean(spa_dat[SP_CODE=="ALB"&YY%in%2020:2022&GEAR_CODE%in%c("T","L"),.(SP_MT=sum(SP_MT)),by=YY]$SP_MT)),big.mark=",",format="f",digits=0)` mt[^1] (or `r paste(round(100*mean(spa_dat[SP_CODE=="ALB"&YY%in%2020:2022&GEAR_CODE%in%c("T","L"),.(SP_MT=sum(SP_MT)),by=YY]$SP_MT)/mean(spa_dat[SP_CODE=="ALB"&YY%in%2020:2022,.(SP_MT=sum(SP_MT)),by=YY]$SP_MT),digits=2),"%")` of recent average total catch) is subject to the proposed MP control.
+
+[^1]: Indonesia (ID) reported some recent period SPA catch using a combination of handline (`r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="ID"&GEAR_CODE=="H"]$SP_MT)` mt), small-scale-hook-and-line (`r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="ID"&GEAR_CODE=="K"]$SP_MT)` mt) and other (`r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="ID"&GEAR_CODE=="O"]$SP_MT)` mt) gears. New Zealand (NZ) reported `r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="NZ"&GEAR_CODE=="P"]$SP_MT)` mt of recent period pole-and-line SPA catch. French Polynesia (PF) reported `r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="PF"&GEAR_CODE=="P"]$SP_MT)` mt of recent period pole-and-line and `r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="PF"&GEAR_CODE=="O"]$SP_MT)` mt of other SPA catch. Papua New Guinea (PG) reported `r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="PG"&GEAR_CODE=="S"]$SP_MT)` mt of recent period purse seine SPA catch. Solomon Islands (SB) reported `r round(spa_dat[YY%in%2020:2022&SP_CODE=="ALB"&!(GEAR_CODE%in%c("T","L")),.(SP_MT=mean(SP_MT)),by=.(FLAG_CODE,GEAR_CODE)][order(FLAG_CODE,GEAR_CODE)][FLAG_CODE=="SB"&GEAR_CODE=="S"]$SP_MT)` mt of recent period purse seine SPA catch.
+
+Of the recent average catch that is subject to MP control `r formatC(round(sum(spa_proc[GEAR_CODE=="Longline (L)"]$SP_MT)),big.mark=",",format="f",digits=0)` mt (`r paste(formatC(round(sum(spa_proc[GEAR_CODE=="Longline (L)"]$prop),digits=2),big.mark=",",format="f",digits=2),"%")`) is caught in longline fisheries and `r formatC(round(sum(spa_proc[GEAR_CODE=="Troll (T)"]$SP_MT)),big.mark=",",format="f",digits=0)` mt (`r paste(formatC(round(sum(spa_proc[GEAR_CODE=="Troll (T)"]$prop),digits=2),big.mark=",",format="f",digits=2),"%")`) is caught in troll fisheries (@fig-spa-catch-gear).
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-catch-gear
+#| fig-cap: "Total catch by fishery, sorted from smallest recent average catch (2020-2022) to largest, where fill color indicates gear. Left y-axis gives the % of recent total average catch. Right y-axis gives the recent average catch in metric tons."
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-dpi: 300
+
+    p = copy(spa_proc) %>%
+        .[,id:=factor(id,levels=spa_proc$id)] %>%
+        ggplot() +
+        xlab("CCM x gear ID") +
+        scale_y_continuous(name = "% Total avg. catch", sec.axis = sec_axis( transform=~.*sum(spa_proc$SP_MT)/100, name="Avg. catch 2020-2022 (mt)")) +
+        geom_hline(yintercept=0) +
+        geom_col(aes(x=id,y=prop,fill=GEAR_CODE)) +
+        scale_fill_manual("Gear type",values=c("#003087", "#FF8400")) +
+        theme(panel.background = element_rect(fill = "transparent", color = "black", linetype = "solid"),
+            panel.grid.major = element_line(color = 'gray70',linetype = "dotted"), 
+            panel.grid.minor = element_line(color = 'gray70',linetype = "dotted"),
+            strip.background =element_rect(fill="transparent"),
+            legend.key = element_rect(fill = "transparent"),
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    p
+```
+
+Broken out by fishery[^fish], China is responsible for the largest share of recent average SPA with `r formatC(round(spa_proc[FLAG_CODE=="CN"]$SP_MT),big.mark=",",format="f",digits=0)` mt of longline catch or `r paste(round(spa_proc[FLAG_CODE=="CN"]$prop,digits=2),"%")` of total average recent catch (@fig-spa-catch-ccm).
+
+[^fish]: Fishery is defined as a unique combination of CCM and gear type.
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-catch-ccm
+#| fig-cap: "Total catch by fishery, sorted from smallest recent average catch (2020-2022) to largest, where fill color indicates CCM category. Left y-axis gives the % of recent total average catch. Right y-axis gives the recent average catch in metric tons."
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-dpi: 300
+
+    p = copy(spa_proc) %>%
+        .[,id:=factor(id,levels=spa_proc$id)] %>%
+        .[,group:="NA"] %>%
+        .[FLAG_CODE%in%c("ES","ID","CA","KR","JP","US","TW","CN"),group:="DWFN"] %>%
+        .[FLAG_CODE%in%c("AU","NZ"),group:="FFA: Other"] %>%
+        .[FLAG_CODE%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA: SPG"] %>%
+        .[FLAG_CODE%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA: PNA+"] %>%
+        .[FLAG_CODE%in%c("AS","NC","PF"),group:="SIDS: Other"] %>%
+        .[,group:=factor(group,levels=c("High-seas", "FFA: SPG", "FFA: PNA+","FFA: Other","SIDS: Other", "DWFN"))] %>%
+        ggplot() +
+        xlab("Flag x gear ID") +
+        scale_y_continuous(name = "% Total avg. catch", sec.axis = sec_axis( transform=~.*sum(spa_proc$SP_MT)/100, name="Avg. catch 2020-2022 (mt)")) +
+        geom_hline(yintercept=0) +
+        geom_col(aes(x=id,y=prop,fill=group)) +
+        scale_fill_manual("CCM group",values=c("High-seas"="#323C46", "FFA: SPG"="#003087", "FFA: PNA+"="#0085CA","FFA: Other"="#1EBEC7","SIDS: Other"="#5761C0", "DWFN"="#FF8400")) +
+        theme(panel.background = element_rect(fill = "white", color = "black", linetype = "solid"),
+            panel.grid.major = element_line(color = 'gray70',linetype = "dotted"), 
+            panel.grid.minor = element_line(color = 'gray70',linetype = "dotted"),
+            strip.background =element_rect(fill="white"),
+            legend.key = element_rect(fill = "white"),
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    p
+```
+
+@tbl-ccm-spa-catch contains the same recent average catch shown in @fig-spa-catch-gear and @fig-spa-catch-ccm for each fishery subject to MP control. It also contains maximum allowable cuts (5 %) and increases (10 %) each time the MP is applied based on the constraints in the proposed CMM[^2].
+
+[^2]: Maximum cuts and increases assume that future allocation reflects recent average catch over the period 2020-2022.
+
+@fig-spa-ccatch shows the percentage of total recent average SPA catch (y-axis) that comes from fisheries that [individually]{.blue} make-up less than a given percentage (x-axis) of total recent average SPA catch.
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-ccatch
+#| fig-cap: "Aggregate total catch (y-axis) for all fisheries with individual total catch less than or equal to a threshold (x-axis)."
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-dpi: 300
+
+    p = thresh_dt %>%
+        ggplot() +
+        coord_cartesian(xlim=c(0,ceiling(max(spa_proc$prop)))) +
+        xlab("Individual fishery threshold (% total catch)") +
+        ylab("% Total catch below fishery threshold") +
+        geom_area(aes(x=threshold,y=totprop),fill="#003087") +
+        geom_hline(yintercept=0) +
+        theme(panel.background = element_rect(fill = "white", color = "black", linetype = "solid"),
+            panel.grid.major = element_line(color = 'gray70',linetype = "dotted"), 
+            panel.grid.minor = element_line(color = 'gray70',linetype = "dotted"),
+            strip.background =element_rect(fill="white"),
+            legend.key = element_rect(fill = "white"))
+    p
+```
+
+# CCM catch by fishing zone
+
+![Exclusive economic zones (EEZs) and high-seas (HS) areas, shaded regions, within the WCPFC-CA. Source <https://www.wcpfc.int/ace_by_eez>.](static/wcpfc-eez-hs.png){#fig-wcpfc-eez}
+
+CCM catch can also be broken out by fishing zone (@fig-wcpfc-eez), where catch originates from either an exclusive economic zone (EEZ) or the high-seas (HS).  @fig-spa-catch-zone shows the same data as in @sec-ccm-catch (see also @tbl-ccm-spa-catch) with the proportion attributable to fishing zone highlighted. Fishing zone designation for longline fisheries come from Table 6 of [SC20-SA-IP-07](https://meetings.wcpfc.int/node/23046) produced by the WCPFC scientific services provider, the Pacific Community ([SPC](https://fame.spc.int/about/oceanic-fisheries-programme)). That paper notes that in the case of some EEZ or high-seas areas with straddle the equator attribution of SPA catch to the southern WCPFC-CA is approximated. Catch designation was unavailable for the troll fisheries. It was assumed that the U.S. and Canadian troll fisheries operated exclusively in the high-seas while the New Zealand troll fishery operated in their domestic EEZ.
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-catch-zone
+#| fig-cap: "Total catch by fishery, sorted from smallest recent average catch (2020-2022) to largest, where fill color indicates proportion of catch attributable to fishing zone type (e.g., EEZ or High-seas; HS). Left y-axis gives the % of recent total average catch. Right y-axis gives the recent average catch in metric tons."
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-dpi: 300
+
+# load EEZ data
+# transcribed from SC20-SA-IP-07 Table 6
+# https://meetings.wcpfc.int/node/23046
+    eez_dat = fread(file=paste0(proj_dir,"/YB_data_2023/spa-ll-eez.csv"),header=TRUE)
+
+    eez_base = as.data.table(expand.grid(id=unique(sort(spa_proc$id)),area_type=c("EEZ","HS")))
+
+    eez_proc_a = copy(eez_dat) %>%
+                melt(., id.vars=c("gear","area_type","area_category","flag")) %>%
+                .[,variable:=as.numeric(as.character(variable))] %>%
+                .[variable%in%2020:2022] %>%
+                .[,.(sp_mt=sum(value)),by=.(gear,variable,area_type,flag)] %>%
+                .[,.(sp_mt=mean(sp_mt)),by=.(gear,area_type,flag)] %>%
+                .[,prop_area:=sp_mt/sum(sp_mt),by=.(gear,flag)] %>%
+                .[,id:=paste0(flag," - ",gear)]
+    
+    eez_combine = merge(eez_base,eez_proc_a[,.(id,area_type,prop_area)],by=c("id","area_type"),all.x=TRUE) %>%
+                  .[is.na(prop_area),prop_area:=0] %>%
+                  .[id=="US - T"&area_type=="HS",prop_area:=1] %>%
+                  .[id=="CA - T"&area_type=="HS",prop_area:=1] %>%
+                  .[id=="NZ - T"&area_type=="EEZ",prop_area:=1] %>%
+                  merge(.,spa_proc[,.(id,prop)],by="id") %>%
+                  .[,rel_prop_area:=prop_area*prop]
+
+# plot cumulative catch curve by zone
+    p = eez_combine %>%
+        .[,id:=factor(id,levels=spa_proc$id)] %>%
+        ggplot() + 
+        xlab("Flag x gear ID") +
+        scale_y_continuous(name = "% Total avg. catch", sec.axis = sec_axis( transform=~.*sum(spa_proc$SP_MT)/100, name="Avg. catch 2020-2022 (mt)")) +
+        geom_hline(yintercept=0) +
+        geom_bar(aes(fill=area_type, y=rel_prop_area, x=id),position="stack", stat="identity") +
+        scale_fill_manual("Zone",values=c("#003087", "#FF8400")) +
+        theme(panel.background = element_rect(fill = "white", color = "black", linetype = "solid"),
+            panel.grid.major = element_line(color = 'gray70',linetype = "dotted"), 
+            panel.grid.minor = element_line(color = 'gray70',linetype = "dotted"),
+            strip.background =element_rect(fill="white"),
+            legend.key = element_rect(fill = "white"),
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    p
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+#| include: false
+
+    # process the eez data for the first chord plot (all fisheries)
+    eez_proc_c = copy(eez_dat) %>%
+                 melt(., id.vars=c("gear","area_type","area_category","flag")) %>%
+                .[,variable:=as.numeric(as.character(variable))] %>%
+                .[variable%in%2020:2022] %>%
+                .[,.(sp_mt=mean(value)),by=.(gear,area_type,area_category,flag)] %>%
+                .[,id:=paste0(flag," - ",gear)] %>%
+                .[id %in% unique(spa_proc$id)] %>%
+                .[,sp_mt:=round(sp_mt,digits=2)] %>%
+                .[sp_mt>0] 
+
+    chord_node_dt = data.table(name=unique(c(eez_proc_c$area_category,eez_proc_c$flag))) %>%
+                   .[,group:="NA"] %>%
+                .[name%in%c("ES","ID","CA","KR","JP","US","TW","CN","BZ","PT"),group:="DWFN"] %>%
+                .[name%in%c("AU","NZ"),group:="FFA: Other"] %>%
+                .[name%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA: SPG"] %>%
+                .[name%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA: PNA+"] %>%
+                .[name%in%c("AS","NC","PF"),group:="SIDS: Other"] %>%
+                .[name%in%c("HS"),group:="High-seas"] %>%
+                .[,group:=factor(group,levels=c("High-seas", "FFA: SPG", "FFA: PNA+","FFA: Other","SIDS: Other", "DWFN"))] %>%
+                .[order(group,name)]
+    
+    # row: source, col: sink
+    chord_mat = matrix(0,nrow=nrow(chord_node_dt),ncol=nrow(chord_node_dt))
+    rownames(chord_mat) = colnames(chord_mat) = chord_node_dt$name
+    for(i in 1:nrow(chord_mat)){
+        for(j in 1:ncol(chord_mat)){
+            if(nrow(eez_proc_c[area_category==rownames(chord_mat)[i]&flag==colnames(chord_mat)[j]])>0){
+                    chord_mat[i,j] = eez_proc_c[area_category==rownames(chord_mat)[i]&flag==colnames(chord_mat)[j]]$sp_mt
+            }
+        }
+    }
+
+    p = chorddiag::chorddiag(round(t(chord_mat)), groupnamePadding = 40,groupColors=c("#323C46", "#003087", "#0085CA","#1EBEC7","#5761C0","#FF8400")[as.numeric(chord_node_dt$group)])
+
+    htmlwidgets::saveWidget(p, file=paste0( getwd(), "/dynamic/chord_interactive.html"),selfcontained=FALSE)
+    webshot2::webshot(url=paste0( getwd(), "/dynamic/chord_interactive.html"),file="static/webshot-chord.png",quiet=TRUE)
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+#| include: false
+
+# data processing to produce the sankey plot
+    eez_proc_b = copy(eez_dat) %>%
+                melt(., id.vars=c("gear","area_type","area_category","flag")) %>%
+                .[,variable:=as.numeric(as.character(variable))] %>%
+                .[variable%in%2020:2022] %>%
+                .[,.(sp_mt=mean(value)),by=.(gear,area_type,area_category,flag)] %>%
+                .[,id:=paste0(flag," - ",gear)] %>%
+                .[id %in% unique(spa_proc$id)] %>%
+                .[,sp_mt:=round(sp_mt,digits=2)] %>%
+                .[sp_mt>0] %>%
+                .[,group:="NA"] %>%
+                .[flag%in%c("ES","ID","CA","KR","JP","US","TW","CN"),group:="DWFN"] %>%
+                .[flag%in%c("AU","NZ"),group:="FFA: Other"] %>%
+                .[flag%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA: SPG"] %>%
+                .[flag%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA: PNA+"] %>%
+                .[flag%in%c("AS","NC","PF"),group:="SIDS: Other"]
+
+    eez_proc_dwfn = eez_proc_b[group=="DWFN"]
+    
+    links = data.frame(source=eez_proc_dwfn$area_category,target=eez_proc_dwfn$flag,value=eez_proc_dwfn$sp_mt)
+    nodes = data.frame(name=unique(c(as.character(links$source),as.character(links$target)))) 
+
+    links = as.data.table(links) %>%
+            .[order(-value)] %>%
+            as.data.frame(.)
+    
+    nodes = as.data.table(nodes) %>%
+            .[,name:=factor(name,levels=c(unique(c(links$source,links$target))))] %>%
+            .[order(name)] %>%
+            .[,group:="NA"] %>%
+                .[name%in%c("ES","ID","CA","KR","JP","US","TW","CN"),group:="DWFN"] %>%
+                .[name%in%c("AU","NZ"),group:="FFA:Other"] %>%
+                .[name%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA:SPG"] %>%
+                .[name%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA:PNA+"] %>%
+                .[name%in%c("AS","NC","PF"),group:="SIDS:Other"] %>%
+                .[name%in%c("HS"),group:="High-seas"] %>%
+            as.data.frame(.)
+    
+    links$IDsource = match(links$source, nodes$name)-1 
+    links$IDtarget = match(links$target, nodes$name)-1
+
+    # prepare colour scale
+    ColourScal ='d3.scaleOrdinal(["#323C46", "#003087", "#0085CA", "#FF8400"])'
+    
+    # Make the Network
+    p_sankey = networkD3::sankeyNetwork(Links = links, Nodes = nodes,
+                Source = "IDsource", Target = "IDtarget", colourScale=ColourScal,
+                Value = "value", NodeID = "name", NodeGroup = "group", 
+                sinksRight=TRUE,fontSize=15,nodeWidth=60,nodePadding=20)
+    
+    htmlwidgets::saveWidget(p_sankey, file=paste0( getwd(), "/dynamic/sankey_interactive.html"),selfcontained=FALSE)
+    webshot2::webshot(url=paste0( getwd(), "/dynamic/sankey_interactive.html"),file="static/webshot-sankey.png",quiet=TRUE)
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+#| include: false
+
+    # data processing for the second chord plot - FFA minus AU & NZ
+    ffa_index = which(rownames(chord_mat) %in% c("CK","FJ","NU","WS","TO","VU","FM","MH","KI","NR","PW","PG","SB","TV","TK","HS"))
+    ffa_chord_mat = chord_mat[ffa_index,ffa_index]
+
+    p_ffa = chorddiag::chorddiag(round(t(ffa_chord_mat)), groupnamePadding = 40,groupColors=c("#323C46", "#003087", "#0085CA","#1EBEC7","#5761C0","#FF8400")[as.numeric(chord_node_dt$group)])
+
+    htmlwidgets::saveWidget(p_ffa, file=paste0( getwd(), "/dynamic/ffa_chord_interactive.html"),selfcontained=FALSE)
+    webshot2::webshot(url=paste0( getwd(), "/dynamic/ffa_chord_interactive.html"),file="static/webshot-ffa-chord.png",quiet=TRUE)
+```
+
+Taking a more granular look at the information available in [SC20-SA-IP-07](https://meetings.wcpfc.int/node/23046) (Table 6), catch flows for recent average longline SPA catch can be identified between CCMs and specific fishing zones[^MA] (@fig-spa-chord). For example, in addition to fishing in the high-seas, these data indicate China has reported catches of at least 500 mt in `r sum(chord_mat[,"CN"]>500)-1` EEZs with the most in-zone catches for China occuring in the Cook Islands (`r formatC(round(chord_mat[,"CN"]["CK"]),big.mark=",")` mt). This is more clearly shown by focusing on the reported fishing zone source of all recent average SPA catch by DWFNs (@fig-spa-sankey). From @fig-spa-chord some CCMs (Australia, New Zealand, American Samoa, French Polynesia, and New Caledonia.) appear to report recent average SPA catch exclusively within their own domestic EEZs. The recent average reported longline catch network of the remaining CCMs, belonging to either the PNA+ or South Pacific Group (SPG), is shown in @fig-ffa-chord.
+
+[Note that recent average longline SPA catch totals in @fig-spa-chord, @fig-spa-sankey or @fig-ffa-chord may not exactly match the values listed in @tbl-ccm-spa-catch due to approximations in attribution for fishing zones that straddle the equator.]{.blue}
+
+Additionally, with regards to vessel chartering arrangements, the public [WCPFC Yearbook data](https://www.wcpfc.int/statistical-bulletins) attributes catch to the chartered flag as opposed to the vessel-flag state. 
+
+[^MA]: Note for the purposes of this summary, the disputed maritime region of Matthew & Hunter (jointly claimed by New Caledonia and Vanuatu) was omitted from the analysis. Negligible catches were observed in this region. 
+
+::: {.content-visible when-format="html"}
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-chord
+#| fig-cap: Chord diagram indicating the breakdown of reported longline SPA catch by fishing zone. Circular segments around the outer edge of the chart indicate the average recent total SPA catch (mt) for each CCM. Colored arcs indicate the source of the SPA catch. Segment and arc color correspond to CCM group. 
+#| fig-width: 8
+#| fig-height: 8
+#| fig-dpi: 300
+
+    # plot the first chord plot - all fisheries
+    p
+```
+:::
+
+::: {.content-visible when-format="pdf"}
+![Chord diagram indicating the breakdown of reported longline SPA catch by fishing zone. Circular segments around the outer edge of the chart indicate the average recent total SPA catch (mt) for each CCM. Colored arcs indicate the source of the SPA catch. Segment and arc color correspond to CCM group.](static/webshot-chord.png){#fig-spa-chord}
+
+:::
+
+::: {.content-visible when-format="html"}
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-spa-sankey
+#| fig-cap: Sankey diagram indicating the breakdown of reported recent average longline SPA catch by fishing zone, only for DWFN fleets. Segments on the left indicate origin, flowing into segments on the right indicating DWFN fleet. Segment color corresponds to CCM group. This figure is a subset of @fig-spa-chord.
+#| fig-width: 8
+#| fig-height: 8
+#| fig-dpi: 300
+
+    # plot the sankey diagram (DWFN fisheries)
+    p_sankey
+```
+:::
+
+::: {.content-visible when-format="pdf"}
+![Sankey diagram indicating the breakdown of reported recent average longline SPA catch by fishing zone, only for DWFN fleets. Segments on the left indicate origin, flowing into segments on the right indicating DWFN fleet. Segment color corresponds to CCM group. This figure is a subset of @fig-spa-chord.](static/webshot-sankey.png){#fig-spa-sankey}
+
+:::
+
+::: {.content-visible when-format="html"}
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: fig-ffa-chord
+#| fig-cap: Chord diagram indicating the breakdown of reported longline SPA catch by fishing zone for CCMs belonging to either the PNA+ or SPG. Circular segments around the outer edge of the chart indicate the average recent total SPA catch (mt) for each CCM. Colored arcs indicate the source of the SPA catch. Segment and arc color correspond to CCM group. This figure is a subset of @fig-spa-chord. 
+#| fig-width: 8
+#| fig-height: 8
+#| fig-dpi: 300
+
+    # plot the second chord plot (PNA+/SPG CCMs)
+    p_ffa
+```
+:::
+
+::: {.content-visible when-format="pdf"}
+![Chord diagram indicating the breakdown of reported longline SPA catch by fishing zone for CCMs belonging to either the PNA+ or SPG. Circular segments around the outer edge of the chart indicate the average recent total SPA catch (mt) for each CCM. Colored arcs indicate the source of the SPA catch. Segment and arc color correspond to CCM group. This figure is a subset of @fig-spa-chord.](static/webshot-ffa-chord.png){#fig-ffa-chord}
+
+:::
+
+# Disclaimer
+
+This data summary and Github repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
+
+
+\pagebreak
+
+# Data
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: tbl-ccm-spa-catch
+#| tbl-cap: Average recent (2020-2022) catch in metric tons by fishery (CCM x Gear). The "% Total" column gives the percentage of average recent total catch attributable to each fishery. The "% HS" column gives the percentage of fishery catch caught on the high seas. The maximum possible cut, Max (-), and increase, Max (+), using the MP constraints defined in the proposed CMM are also shown for reference.
+
+table_out = copy(spa_proc) %>%
+        .[,id:=factor(id,levels=spa_proc$id)] %>%
+        .[,group:="NA"] %>%
+        .[FLAG_CODE%in%c("ES","ID","CA","KR","JP","US","TW","CN"),group:="DWFN"] %>%
+        .[FLAG_CODE%in%c("AU","NZ"),group:="FFA: Other"] %>%
+        .[FLAG_CODE%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA: SPG"] %>%
+        .[FLAG_CODE%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA: PNA+"] %>%
+        .[FLAG_CODE%in%c("AS","NC","PF"),group:="SIDS: Other"] %>%
+        .[,max_cut:=formatC(round(SP_MT*0.05),big.mark=",",format="f",digits=0)] %>%
+        .[,max_increase:=formatC(round(SP_MT*0.1),big.mark=",",format="f",digits=0)] %>%
+        .[,.(id, group, FLAG_CODE,GEAR_CODE,SP_MT,prop,max_cut,max_increase)] %>%
+        merge(.,eez_combine[area_type=="HS",.(id,area_type,prop_area)],by.x="id",by.y="id",all.x=TRUE) %>%
+        .[,area_type:=NULL] %>%
+        .[,prop_area:=formatC(round(prop_area*100,digits=2),format="f",digits=2)] %>%
+        .[order(-SP_MT)] %>%
+        .[,SP_MT:=formatC(round(SP_MT),big.mark=",",format="f",digits=0)] %>%
+        .[,prop:=formatC(round(prop,digits=2),format="f",digits=2)] %>%
+        setnames(.,c("id","group", "FLAG_CODE","GEAR_CODE","SP_MT","prop","max_cut","max_increase"),c("ID","CCM cat.", "CCM","Gear","SPA catch (mt)","% Total","Max (-)","Max (+)")) %>%
+        setnames(.,"prop_area","% HS")
+knitr::kable(table_out)
+```
+
+
+# CCM Abbreviations
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: tbl-ccm-abbr
+#| tbl-cap: "Two-letter country codes for each CCM."
+
+table_out_ccm = fread(file=paste0(proj_dir,"/YB_data_2023/ccm-dat.csv"),header=TRUE) %>% as.data.frame(.)
+table_out_ccm = as.data.table(table_out_ccm[,1:3])
+knitr::kable(table_out_ccm)
+```

@@ -1,0 +1,42 @@
+project:
+  type: website
+  resources:
+   - customizations/*
+   - dynamic/*
+
+
+website:
+  title: "WCPFC-CA SPA catch summary"
+  reader-mode: true
+  site-url: "https://N-DucharmeBarth-NOAA/2024-spa-summary" 
+  repo-url: "https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary"
+  repo-actions: [source, issue]
+  search: true
+  back-to-top-navigation: true
+  bread-crumbs: false
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary
+    contents: 
+      - text: "Home"
+        file: index.qmd
+      - text: "SPA catch summary"
+        file: wcpfc-ca-spa-catch-summary.qmd
+      - section: "Support"
+        contents:
+        - text: "Submit an issue"
+          href: https://github.com/N-DucharmeBarth-NOAA/2024-spa-summary/issues/new/choose
+        - text: "Contact us"
+          href: https://pifscstockassessments.github.io/
+
+format: 
+  html:
+    toc: true
+    toc-expand: false
+    theme:
+      - default
+      - customizations/custom.scss
