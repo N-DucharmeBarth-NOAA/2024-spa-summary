@@ -153,7 +153,7 @@ Broken out by fishery[^fish], China is responsible for the largest share of rece
     p
 ```
 
-@tbl-ccm-spa-catch contains the same recent average catch shown in @fig-spa-catch-gear and @fig-spa-catch-ccm for each fishery subject to MP control. It also contains maximum allowable cuts (5 %) and increases (10 %) each time the MP is applied based on the constraints in the proposed CMM[^2]. @tbl-ccm-spa-catch-relative gives the recent average catch and compares it to average catch in two additional historical time periods (2007-2009 and 2011-2013).
+@tbl-ccm-spa-catch contains the same recent average catch shown in @fig-spa-catch-gear and @fig-spa-catch-ccm for each fishery subject to MP control. It also contains maximum allowable cuts (5 %) and increases (10 %) each time the MP is applied based on the constraints in the proposed CMM[^2]. @tbl-ccm-spa-catch-relative gives the recent average catch and compares it to average catch in three additional historical time periods (2000-2004, 2007-2009 and 2011-2013).
 
 [^2]: Maximum cuts and increases assume that future allocation reflects recent average catch over the period 2020-2022.
 
