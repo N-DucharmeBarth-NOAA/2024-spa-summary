@@ -153,7 +153,7 @@ Broken out by fishery[^fish], China is responsible for the largest share of rece
     p
 ```
 
-@tbl-ccm-spa-catch contains the same recent average catch shown in @fig-spa-catch-gear and @fig-spa-catch-ccm for each fishery subject to MP control. It also contains maximum allowable cuts (5 %) and increases (10 %) each time the MP is applied based on the constraints in the proposed CMM[^2].
+@tbl-ccm-spa-catch contains the same recent average catch shown in @fig-spa-catch-gear and @fig-spa-catch-ccm for each fishery subject to MP control. It also contains maximum allowable cuts (5 %) and increases (10 %) each time the MP is applied based on the constraints in the proposed CMM[^2]. @tbl-ccm-spa-catch-relative gives the recent average catch and compares it to average catch in two additional historical time periods (2007-2009 and 2011-2013).
 
 [^2]: Maximum cuts and increases assume that future allocation reflects recent average catch over the period 2020-2022.
 
@@ -472,6 +472,79 @@ table_out = copy(spa_proc) %>%
 knitr::kable(table_out)
 ```
 
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+#| label: tbl-ccm-spa-catch-relative
+#| tbl-cap: South pacific albacore catch (mt) by fishery (CCM x Gear) and time period (2020-2022, 2000-2004, 2007-2009, and 2011-2013). The "% Total" column gives the percentage of total catch attributable to each fishery in the corresponding time period.
+    
+    spa_2020_2022 = copy(spa_dat) %>%
+                .[SP_CODE=="ALB"&GEAR_CODE%in%c("L","T")] %>%
+                .[FLEET_CODE=="AS",FLAG_CODE:="AS"] %>%
+                .[,.(YY,GEAR_CODE,FLAG_CODE,SP_MT)] %>%
+                .[,id:=paste0(FLAG_CODE," - ",GEAR_CODE)] %>%
+                .[,GEAR_CODE:=factor(GEAR_CODE,levels=c("L","T"),labels=c("Longline (L)", "Troll (T)"))] %>%
+                .[YY %in% 2020:2022,.(SP_MT=mean(SP_MT,na.rm=TRUE)),by=.(id,FLAG_CODE,GEAR_CODE)] %>%
+                .[,prop:=SP_MT/sum(SP_MT)*100] %>%
+                .[order(prop)]
+
+    spa_2000_2004 = copy(spa_dat) %>%
+                .[SP_CODE=="ALB"&GEAR_CODE%in%c("L","T")] %>%
+                .[FLEET_CODE=="AS",FLAG_CODE:="AS"] %>%
+                .[,.(YY,GEAR_CODE,FLAG_CODE,SP_MT)] %>%
+                .[,id:=paste0(FLAG_CODE," - ",GEAR_CODE)] %>%
+                .[,GEAR_CODE:=factor(GEAR_CODE,levels=c("L","T"),labels=c("Longline (L)", "Troll (T)"))] %>%
+                .[YY %in% 2000:2004,.(SP_MT_d=mean(SP_MT,na.rm=TRUE)),by=.(id,FLAG_CODE,GEAR_CODE)] %>%
+                .[,prop_d:=SP_MT_d/sum(SP_MT_d)*100] %>%
+                .[order(prop_d)]
+
+    spa_2007_2009 = copy(spa_dat) %>%
+                .[SP_CODE=="ALB"&GEAR_CODE%in%c("L","T")] %>%
+                .[FLEET_CODE=="AS",FLAG_CODE:="AS"] %>%
+                .[,.(YY,GEAR_CODE,FLAG_CODE,SP_MT)] %>%
+                .[,id:=paste0(FLAG_CODE," - ",GEAR_CODE)] %>%
+                .[,GEAR_CODE:=factor(GEAR_CODE,levels=c("L","T"),labels=c("Longline (L)", "Troll (T)"))] %>%
+                .[YY %in% 2007:2009,.(SP_MT_a=mean(SP_MT,na.rm=TRUE)),by=.(id,FLAG_CODE,GEAR_CODE)] %>%
+                .[,prop_a:=SP_MT_a/sum(SP_MT_a)*100] %>%
+                .[order(prop_a)]
+    
+    spa_2011_2013 = copy(spa_dat) %>%
+                .[SP_CODE=="ALB"&GEAR_CODE%in%c("L","T")] %>%
+                .[FLEET_CODE=="AS",FLAG_CODE:="AS"] %>%
+                .[,.(YY,GEAR_CODE,FLAG_CODE,SP_MT)] %>%
+                .[,id:=paste0(FLAG_CODE," - ",GEAR_CODE)] %>%
+                .[,GEAR_CODE:=factor(GEAR_CODE,levels=c("L","T"),labels=c("Longline (L)", "Troll (T)"))] %>%
+                .[YY %in% 2011:2013,.(SP_MT_b=mean(SP_MT,na.rm=TRUE)),by=.(id,FLAG_CODE,GEAR_CODE)] %>%
+                .[,prop_b:=SP_MT_b/sum(SP_MT_b)*100] %>%
+                .[order(prop_b)]
+
+    spa_rel = merge(spa_2020_2022,spa_2000_2004,by=c("id","FLAG_CODE","GEAR_CODE")) %>%
+              merge(.,spa_2007_2009) %>%
+              merge(.,spa_2011_2013)
+    tbl_spa_rel = copy(spa_rel) %>%
+        .[,id:=factor(id,levels=spa_rel$id)] %>%
+        .[,group:="NA"] %>%
+        .[FLAG_CODE%in%c("ES","ID","CA","KR","JP","US","TW","CN"),group:="DWFN"] %>%
+        .[FLAG_CODE%in%c("AU","NZ"),group:="FFA: Other"] %>%
+        .[FLAG_CODE%in%c("CK","FJ","NU","WS","TO","VU"),group:="FFA: SPG"] %>%
+        .[FLAG_CODE%in%c("FM","MH","KI","NR","PW","PG","SB","TV","TK"),group:="FFA: PNA+"] %>%
+        .[FLAG_CODE%in%c("AS","NC","PF"),group:="SIDS: Other"] %>%
+        .[order(id)] %>%
+        .[,SP_MT:=formatC(round(SP_MT),big.mark=",",format="f",digits=0)] %>%
+        .[,SP_MT_d:=formatC(round(SP_MT_d),big.mark=",",format="f",digits=0)] %>%
+        .[,SP_MT_a:=formatC(round(SP_MT_a),big.mark=",",format="f",digits=0)] %>%
+        .[,SP_MT_b:=formatC(round(SP_MT_b),big.mark=",",format="f",digits=0)] %>%
+        .[,prop:=formatC(round(prop,digits=2),format="f",digits=2)] %>%
+        .[,prop_d:=formatC(round(prop_d,digits=2),format="f",digits=2)] %>%
+        .[,prop_a:=formatC(round(prop_a,digits=2),format="f",digits=2)] %>%
+        .[,prop_b:=formatC(round(prop_b,digits=2),format="f",digits=2)] %>%
+        .[,.(id,SP_MT,prop,SP_MT_d,prop_d,SP_MT_a,prop_a,SP_MT_b,prop_b)] %>%
+        setnames(.,c("id","SP_MT","prop","SP_MT_d","prop_d","SP_MT_a","prop_a","SP_MT_b","prop_b"),c("ID","SPA catch (2020-2022)","% Total (2020-2022)","SPA catch (2000-2004)","% Total (2000-2004)","SPA catch (2007-2009)","% Total (2007-2009)","SPA catch (2011-2013)","% Total (2011-2013)")) 
+
+    knitr::kable(tbl_spa_rel)
+
+```
 
 # CCM Abbreviations
 
