@@ -519,9 +519,9 @@ knitr::kable(table_out)
                 .[,prop_b:=SP_MT_b/sum(SP_MT_b)*100] %>%
                 .[order(prop_b)]
 
-    spa_rel = merge(spa_2020_2022,spa_2000_2004,by=c("id","FLAG_CODE","GEAR_CODE")) %>%
-              merge(.,spa_2007_2009) %>%
-              merge(.,spa_2011_2013)
+    spa_rel = merge(spa_2020_2022,spa_2000_2004,by=c("id","FLAG_CODE","GEAR_CODE"),all=TRUE) %>%
+              merge(.,spa_2007_2009,all=TRUE) %>%
+              merge(.,spa_2011_2013,all=TRUE)
     tbl_spa_rel = copy(spa_rel) %>%
         .[,id:=factor(id,levels=spa_rel$id)] %>%
         .[,group:="NA"] %>%
