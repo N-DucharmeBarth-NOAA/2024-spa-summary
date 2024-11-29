@@ -253,7 +253,8 @@ CCM catch can also be broken out by fishing zone (@fig-wcpfc-eez), where catch o
                  melt(., id.vars=c("gear","area_type","area_category","flag")) %>%
                 .[,variable:=as.numeric(as.character(variable))] %>%
                 .[variable%in%2020:2022] %>%
-                .[,.(sp_mt=mean(value)),by=.(gear,area_type,area_category,flag)] %>%
+                .[,.(sp_mt=sum(value)),by=.(gear,area_type,area_category,flag,variable)] %>%
+                .[,.(sp_mt=mean(sp_mt)),by=.(gear,area_type,area_category,flag)] %>%
                 .[,id:=paste0(flag," - ",gear)] %>%
                 .[id %in% unique(spa_proc$id)] %>%
                 .[,sp_mt:=round(sp_mt,digits=2)] %>%
@@ -298,7 +299,8 @@ CCM catch can also be broken out by fishing zone (@fig-wcpfc-eez), where catch o
                 melt(., id.vars=c("gear","area_type","area_category","flag")) %>%
                 .[,variable:=as.numeric(as.character(variable))] %>%
                 .[variable%in%2020:2022] %>%
-                .[,.(sp_mt=mean(value)),by=.(gear,area_type,area_category,flag)] %>%
+                .[,.(sp_mt=sum(value)),by=.(gear,area_type,area_category,flag,variable)] %>%
+                .[,.(sp_mt=mean(sp_mt)),by=.(gear,area_type,area_category,flag)] %>%
                 .[,id:=paste0(flag," - ",gear)] %>%
                 .[id %in% unique(spa_proc$id)] %>%
                 .[,sp_mt:=round(sp_mt,digits=2)] %>%
